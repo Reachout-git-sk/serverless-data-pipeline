@@ -6,6 +6,12 @@ bad rows are routed to a quarantine folder, and the curated data is queried with
 SQL in Athena through shared metric views. All infrastructure is defined in
 Terraform, so the whole thing comes up with one command and goes away with another.
 
+> **Where it has run:** the Terraform stack has been deployed and exercised end to end
+> on **LocalStack Community** (S3, Lambda, S3 trigger, IAM, CloudWatch, SNS), and CI does
+> this on every push. It has **not** been deployed to a real AWS account. Glue and Athena
+> are not in LocalStack Community, so on LocalStack the SQL views run in DuckDB over the
+> Parquet read back from S3.
+
 ```mermaid
 flowchart LR
     A[CSV upload] -->|s3:ObjectCreated<br/>prefix raw/, suffix .csv| B[(S3 raw/)]
@@ -101,6 +107,10 @@ scripts/
   generate_sample_data.py
   local_run.py      full pipeline on your machine with DuckDB, no AWS needed
   run_athena_sql.py run views.sql or ad hoc SQL against the deployed workgroup
+  build_lambda_package.sh  handler + pandas/pyarrow in one zip (for LocalStack)
+  localstack.sh     up | down: the Terraform stack on LocalStack
+  localstack_run.py push the sample files through the deployed stack and record results
+localstack/         docker-compose for LocalStack, provider override for Terraform
 tests/              pytest: transform rules, Lambda against mocked S3, schema contract
 ```
 
@@ -142,7 +152,49 @@ Measured locally (7 files, Windows laptop, Python 3.11):
 | Transform time per file (~5,050 rows) | 97 to 172 ms |
 | Throughput | ~44,000 rows/s |
 
-## Deploy to AWS
+## Deploy on LocalStack (free, no AWS account)
+
+Needs Docker, Terraform 1.6+ and Python.
+
+```bash
+python scripts/generate_sample_data.py --days 7 --rows 5000
+bash scripts/localstack.sh up          # LocalStack 3.8 + terraform apply in a "localstack" workspace
+python scripts/localstack_run.py       # upload, wait for outputs, read CloudWatch Logs, query
+bash scripts/localstack.sh down        # terraform destroy + stop LocalStack
+```
+
+`localstack.sh` copies [`localstack/localstack_override.tf`](localstack/localstack_override.tf) into
+`terraform/` so the AWS provider points at `localhost:4566`, and applies with:
+
+- `enable_athena=false`: no Glue database, Glue tables, Athena workgroup or results bucket
+- `pandas_layer_arn=""` and `lambda_package_dir=build/package`: LocalStack Community has no
+  Lambda layers, so pandas and pyarrow are bundled into the function zip (216 MB unzipped).
+  That zip is over the direct-upload limit, so Terraform uploads it to S3 and the function
+  is created from there.
+
+The same files deploy to AWS unchanged with the defaults below.
+
+### Results on LocalStack
+
+Measured on 2026-10-13 against a fresh stack. These are two clean runs on this laptop
+(Docker Desktop, LocalStack 3.8.1); [`docs/localstack-run.json`](docs/localstack-run.json) is the second.
+
+| Metric | Value |
+|---|---|
+| Files / rows in | 7 / 35,351 |
+| Rows curated / quarantined | 34,283 / 1,068 (3.02%), the same as the local DuckDB run |
+| Lambda duration per file (~5,050 rows), from CloudWatch `REPORT` lines | median 95 ms and 117 ms (two runs). The first invocation took 329 ms and 510 ms |
+| Upload to curated Parquet visible in S3, warm | median ~290 ms |
+| First file after deploy | 14.2 s and 17.9 s, mostly LocalStack starting the Lambda container |
+| Re-upload of `orders_2024-03-01.csv` | 29 curated objects before and after, same keys (idempotent) |
+| File with a broken header | copied whole to `quarantine/files/`, logged as `file_quarantined` |
+| Fact rows read back from S3 | 34,283, total revenue 5,786,005.12 |
+
+LocalStack timings are not AWS timings: there is no network hop to a region, and
+cold starts work differently. LocalStack also does not enforce IAM by default, so
+the least-privilege policy was deployed but not tested.
+
+## Deploy to AWS (not run yet)
 
 Requires Terraform 1.6+, the AWS CLI with credentials configured, and Python for the helper scripts.
 
