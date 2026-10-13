@@ -6,6 +6,7 @@ set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 rm -rf "$root/terraform/build/package"
+mkdir -p "$root/terraform/build" # host-owned, so Terraform can write lambda.zip next to the package
 
 # everything runs inside the container so file ownership doesn't matter on Linux hosts.
 # boto3 is already in the Lambda runtime; caches and test suites are dropped to save space.
