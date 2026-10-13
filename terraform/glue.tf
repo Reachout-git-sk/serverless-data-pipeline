@@ -1,5 +1,6 @@
 resource "aws_glue_catalog_database" "orders" {
-  name = replace("${local.name}_db", "-", "_")
+  count = var.enable_athena ? 1 : 0
+  name  = replace("${local.name}_db", "-", "_")
 }
 
 locals {
@@ -55,9 +56,9 @@ locals {
 }
 
 resource "aws_glue_catalog_table" "curated" {
-  for_each      = local.tables
+  for_each      = var.enable_athena ? local.tables : {}
   name          = each.key
-  database_name = aws_glue_catalog_database.orders.name
+  database_name = aws_glue_catalog_database.orders[0].name
   description   = each.value.comment
   table_type    = "EXTERNAL_TABLE"
 

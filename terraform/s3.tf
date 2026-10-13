@@ -15,6 +15,7 @@ resource "aws_s3_bucket" "data" {
 }
 
 resource "aws_s3_bucket" "athena_results" {
+  count         = var.enable_athena ? 1 : 0
   bucket        = local.results_bucket
   force_destroy = true
 }
@@ -28,7 +29,8 @@ resource "aws_s3_bucket_public_access_block" "data" {
 }
 
 resource "aws_s3_bucket_public_access_block" "athena_results" {
-  bucket                  = aws_s3_bucket.athena_results.id
+  count                   = var.enable_athena ? 1 : 0
+  bucket                  = aws_s3_bucket.athena_results[0].id
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -45,7 +47,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "data" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "athena_results" {
-  bucket = aws_s3_bucket.athena_results.id
+  count  = var.enable_athena ? 1 : 0
+  bucket = aws_s3_bucket.athena_results[0].id
   rule {
     id     = "expire-query-results"
     status = "Enabled"

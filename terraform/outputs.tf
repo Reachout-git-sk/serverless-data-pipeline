@@ -7,11 +7,11 @@ output "lambda_function" {
 }
 
 output "glue_database" {
-  value = aws_glue_catalog_database.orders.name
+  value = one(aws_glue_catalog_database.orders[*].name)
 }
 
 output "athena_workgroup" {
-  value = aws_athena_workgroup.orders.name
+  value = one(aws_athena_workgroup.orders[*].name)
 }
 
 output "log_group" {
