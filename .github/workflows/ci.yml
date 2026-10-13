@@ -23,3 +23,25 @@ jobs:
       - run: terraform -chdir=terraform fmt -check
       - run: terraform -chdir=terraform init -backend=false
       - run: terraform -chdir=terraform validate
+
+  # Deploy the same Terraform to LocalStack Community and push the sample files through it
+  localstack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+      - run: pip install -r requirements-dev.txt
+      - run: python scripts/generate_sample_data.py --days 7 --rows 5000
+      - run: bash scripts/localstack.sh up
+      - run: python scripts/localstack_run.py --out localstack-run.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: localstack-run
+          path: localstack-run.json
+      - if: always()
+        run: bash scripts/localstack.sh down
