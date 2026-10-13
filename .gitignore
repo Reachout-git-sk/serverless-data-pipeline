@@ -9,6 +9,8 @@ terraform/*.tfstate
 terraform/*.tfstate.*
 terraform/.terraform.lock.hcl
 terraform/build/
+terraform/terraform.tfstate.d/
+terraform/localstack_override.tf
 *.tfvars
 
 # generated sample files

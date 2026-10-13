@@ -1,0 +1,18 @@
+# LocalStack Community: S3, Lambda, IAM, CloudWatch and SNS on your machine.
+#   docker compose -f localstack/docker-compose.yml up -d
+# Lambda functions run in their own containers, so LocalStack needs the Docker socket.
+services:
+  localstack:
+    image: localstack/localstack:3.8
+    container_name: orders-pipeline-localstack
+    ports:
+      - "127.0.0.1:4566:4566"
+    environment:
+      SERVICES: s3,lambda,iam,sts,logs,cloudwatch,sns
+      # pandas + pyarrow are bundled into the function zip (Community has no layers),
+      # which is over the real 50 MB / 250 MB limits, so raise them here.
+      LAMBDA_LIMITS_CODE_SIZE_ZIPPED: "157286400"
+      LAMBDA_LIMITS_CODE_SIZE_UNZIPPED: "524288000"
+      LAMBDA_RUNTIME_ENVIRONMENT_TIMEOUT: "60"
+    volumes:
+      - "//var/run/docker.sock:/var/run/docker.sock"
