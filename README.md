@@ -190,6 +190,10 @@ Measured on 2026-10-13 against a fresh stack. These are two clean runs on this l
 | File with a broken header | copied whole to `quarantine/files/`, logged as `file_quarantined` |
 | Fact rows read back from S3 | 34,283, total revenue 5,786,005.12 |
 
+The `localstack` CI job repeats this on every push and uploads the JSON as an artifact.
+On the first green run (GitHub `ubuntu-latest`) the row counts and revenue were
+identical, the Lambda median was 64 ms, and the run fails if any of these checks fail.
+
 LocalStack timings are not AWS timings: there is no network hop to a region, and
 cold starts work differently. LocalStack also does not enforce IAM by default, so
 the least-privilege policy was deployed but not tested.
