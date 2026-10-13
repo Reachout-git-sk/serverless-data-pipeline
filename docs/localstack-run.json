@@ -1,0 +1,164 @@
+{
+  "files": 7,
+  "rows_in": 35351,
+  "rows_quarantined": 1068,
+  "pct_quarantined": 3.02,
+  "handler_ms": {
+    "per_file": {
+      "orders_2024-03-01.csv": 506.4,
+      "orders_2024-03-02.csv": 108.0,
+      "orders_2024-03-03.csv": 124.9,
+      "orders_2024-03-04.csv": 132.7,
+      "orders_2024-03-05.csv": 114.8,
+      "orders_2024-03-06.csv": 101.9,
+      "orders_2024-03-07.csv": 125.5
+    },
+    "median": 124.9,
+    "max": 506.4
+  },
+  "lambda_report_ms": [
+    {
+      "duration_ms": 509.75,
+      "init_ms": null
+    },
+    {
+      "duration_ms": 110.56,
+      "init_ms": null
+    },
+    {
+      "duration_ms": 127.42,
+      "init_ms": null
+    },
+    {
+      "duration_ms": 134.77,
+      "init_ms": null
+    },
+    {
+      "duration_ms": 116.62,
+      "init_ms": null
+    },
+    {
+      "duration_ms": 104.23,
+      "init_ms": null
+    },
+    {
+      "duration_ms": 129.36,
+      "init_ms": null
+    },
+    {
+      "duration_ms": 103.43,
+      "init_ms": null
+    },
+    {
+      "duration_ms": 13.02,
+      "init_ms": null
+    }
+  ],
+  "upload_to_output_ms": {
+    "orders_2024-03-01.csv": 17944,
+    "orders_2024-03-02.csv": 282,
+    "orders_2024-03-03.csv": 296,
+    "orders_2024-03-04.csv": 292,
+    "orders_2024-03-05.csv": 283,
+    "orders_2024-03-06.csv": 298,
+    "orders_2024-03-07.csv": 285
+  },
+  "idempotent_reupload": {
+    "curated_objects_before": 29,
+    "after": 29,
+    "same_keys": true
+  },
+  "bad_header_quarantined": [
+    "raw/orders_bad_header.csv"
+  ],
+  "fact_rows_from_s3": 34283,
+  "total_revenue": 5786005.12,
+  "v_revenue_by_region": [
+    {
+      "year": 2024,
+      "month": 3,
+      "region": "Northeast",
+      "orders": 10287,
+      "revenue": 1736124.83
+    },
+    {
+      "year": 2024,
+      "month": 3,
+      "region": "South",
+      "orders": 10328,
+      "revenue": 1744542.95
+    },
+    {
+      "year": 2024,
+      "month": 3,
+      "region": "Midwest",
+      "orders": 6775,
+      "revenue": 1140988.35
+    },
+    {
+      "year": 2024,
+      "month": 3,
+      "region": "West",
+      "orders": 6893,
+      "revenue": 1164348.99
+    }
+  ],
+  "v_daily_revenue": [
+    {
+      "full_date": "2024-03-01T00:00:00.000",
+      "day_of_week": "Friday",
+      "orders": 4894,
+      "units": 14620.0,
+      "revenue": 823314.06,
+      "avg_order_value": 168.23
+    },
+    {
+      "full_date": "2024-03-02T00:00:00.000",
+      "day_of_week": "Saturday",
+      "orders": 4909,
+      "units": 14684.0,
+      "revenue": 807491.82,
+      "avg_order_value": 164.49
+    },
+    {
+      "full_date": "2024-03-03T00:00:00.000",
+      "day_of_week": "Sunday",
+      "orders": 4903,
+      "units": 14734.0,
+      "revenue": 819121.28,
+      "avg_order_value": 167.07
+    },
+    {
+      "full_date": "2024-03-04T00:00:00.000",
+      "day_of_week": "Monday",
+      "orders": 4898,
+      "units": 14632.0,
+      "revenue": 832138.75,
+      "avg_order_value": 169.89
+    },
+    {
+      "full_date": "2024-03-05T00:00:00.000",
+      "day_of_week": "Tuesday",
+      "orders": 4877,
+      "units": 14892.0,
+      "revenue": 833865.69,
+      "avg_order_value": 170.98
+    },
+    {
+      "full_date": "2024-03-06T00:00:00.000",
+      "day_of_week": "Wednesday",
+      "orders": 4903,
+      "units": 14836.0,
+      "revenue": 835493.23,
+      "avg_order_value": 170.4
+    },
+    {
+      "full_date": "2024-03-07T00:00:00.000",
+      "day_of_week": "Thursday",
+      "orders": 4899,
+      "units": 14831.0,
+      "revenue": 834580.29,
+      "avg_order_value": 170.36
+    }
+  ]
+}
